@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  # nginx:
+  #   build:
+  #     context: ./srcs/nginx
+  #   ports:
+  #     -   443:443  
+  #     -   80:80  
+  #   volumes:
+  #     - ./srcs/nginx/nginx.conf:/etc/nginx/nginx.conf
+  #     - ./srcs/nginx/conf.d:/etc/nginx/conf.d
+  #     - ./srcs/nginx/ssl:/etc/nginx/ssl
+  #   depends_on:
+  #     - wordpress
+  #   networks:
+  #     - insception
+  
+  # wordpress:
+  #   build:
+  #     context: ./srcs/wordpress
+  #   ports:
+  #     - "9000:9000"
+  #   volumes:
+  #     - ./srcs/wordpress:/var/www/html
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - insception
+
+  db:
+    build:
+      context: ./srcs/mariaDB
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./srcs/mariaDB:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - insception
+    
+networks:
+  insception:
+    driver: bridge
