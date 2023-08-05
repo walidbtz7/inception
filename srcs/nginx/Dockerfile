@@ -4,10 +4,9 @@ RUN apt-get update && apt-get upgrade -y
 
 RUN apt-get install -y nginx
 
-COPY conf/nginx.conf /etc/nginx/server.conf
+COPY conf/nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY conf/ssl/certificate.crt /etc/nginx/server.crt
-COPY conf/ssl/private.key /etc/nginx/server.key
+COPY conf/ssl/ /etc/nginx/
 
 RUN rm /etc/nginx/sites-enabled/default
 

@@ -13,20 +13,20 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
 # and renaming it 'wp' to use that as the command and not 'wp-cli.phar'
 RUN chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
 
+COPY www.conf /etc/php/7.3/fpm/pool.d/www.conf
 # You may need to copy the necessary files for WordPress setup.
 # Assuming you have a directory containing the WordPress files and wp_setup.sh,
 # you can uncomment and use the following line to copy them.
 COPY . /var/www/html/
 
-COPY wp-config.php /var/www/html/wordpress/wp-config.php
+WORKDIR /var/www/html/
 
-# Ensure the wp_setup.sh script is executable
-COPY wp_setup.sh /wp_setup.sh
-RUN chmod +x /wp_setup.sh
+COPY wp_setup.sh .
 
-# Create the directory for PHP-FPM socket
-RUN mkdir /run/php/
+RUN chmod +x wp_setup.sh
 
-ENTRYPOINT ["/wp_setup.sh"]
+RUN mkdir -p /run/php
+
+ENTRYPOINT [ "./wp_setup.sh" ]
 
 CMD ["php-fpm7.3", "-F"]
