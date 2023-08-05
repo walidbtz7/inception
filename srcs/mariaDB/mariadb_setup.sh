@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/bin/bash
+set -e
 
-# Start MariaDB
-/etc/init.d/mariadb start
+# Start the MariaDB server to perform initial setup tasks
+mysqld &
 
-# Wait for MariaDB to start
-while ! mysqladmin ping -hlocalhost --silent; do
+# Wait for the server to be ready
+while ! mysqladmin ping --silent; do
     sleep 1
 done
 
@@ -14,8 +15,7 @@ mysql -uroot -e "GRANT ALL ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%' IDENTIF
 mysql -uroot -e "GRANT ALL ON *.* TO '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}' WITH GRANT OPTION;"
 mysql -uroot -e "FLUSH PRIVILEGES;"
 
-# Stop MariaDB
-/etc/init.d/mariadb stop
+# Wait for a few more seconds to ensure the setup tasks are completed
+sleep 5
 
-# Run MariaDB in the foreground
-/usr/bin/mysqld_safe --datadir='/var/lib/mysql'
+# The script exits here, and the container continues running with the entrypoint script.

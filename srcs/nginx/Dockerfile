@@ -1,20 +1,16 @@
-# Start from the latest Nginx image
-FROM nginx:latest
+FROM debian:buster
 
-# Remove the default Nginx configuration file
-RUN rm /etc/nginx/conf.d/default.conf
+RUN apt-get update && apt-get upgrade -y
 
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY conf.d /etc/nginx/conf.d
+RUN apt-get install -y nginx
 
-# Create a directory for SSL
-RUN mkdir -p /etc/nginx/ssl
+COPY conf/nginx.conf /etc/nginx/server.conf
 
-# In your Docker Compose, you are mounting the SSL directory. So, you may want to COPY it here as well
-COPY ssl /etc/nginx/ssl
+COPY conf/ssl/certificate.crt /etc/nginx/server.crt
+COPY conf/ssl/private.key /etc/nginx/server.key
 
-# Expose ports 80 and 443 for the Nginx server
-EXPOSE 80 443
+RUN rm /etc/nginx/sites-enabled/default
 
-# Start the Nginx server
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 443
+
+CMD ["nginx", "-g", "daemon off;", "-c", "/etc/nginx/nginx.conf"]

@@ -3,7 +3,8 @@ SRC = docker-compose.yml
 All: $(NAME)
 
 $(NAME):
-	docker-compose -f $(SRC) up -d
+	docker-compose -f $(SRC) build --no-cache
+	docker-compose -f $(SRC) up
 
 clean:
 	docker-compose -f $(SRC) down
@@ -11,4 +12,4 @@ clean:
 fclean: clean
 	docker-compose -f $(SRC) rm
 
-re: fclean Al
+re: fclean All

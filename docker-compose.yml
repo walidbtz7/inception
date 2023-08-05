@@ -1,48 +1,79 @@
-version: "3.8"
+version: "3"
+volumes:
+  wordpress_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/volumes/wordpress
+  mariadb_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/volumes/mariadb
 
-services:
-  # nginx:
-  #   build:
-  #     context: ./srcs/nginx
-  #   ports:
-  #     -   443:443  
-  #     -   80:80  
-  #   volumes:
-  #     - ./srcs/nginx/nginx.conf:/etc/nginx/nginx.conf
-  #     - ./srcs/nginx/conf.d:/etc/nginx/conf.d
-  #     - ./srcs/nginx/ssl:/etc/nginx/ssl
-  #   depends_on:
-  #     - wordpress
-  #   networks:
-  #     - insception
-  
-  # wordpress:
-  #   build:
-  #     context: ./srcs/wordpress
-  #   ports:
-  #     - "9000:9000"
-  #   volumes:
-  #     - ./srcs/wordpress:/var/www/html
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     - insception
-
-  db:
-    build:
-      context: ./srcs/mariaDB
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./srcs/mariaDB:/var/lib/mysql
+services: 
+  mariadb:
+    container_name: mariadb
+    build: ./srcs/mariadb
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWOR=${MYSQL_ROOT_PASSWORD} 
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mariadb_volume:/var/lib/mysql/
+    env_file: 
+      - .env 
     networks:
-      - insception
-    
-networks:
+      - insception 
+    ports:
+      - 3306:3306
+    init : true
+
+  wordpress:
+    container_name: wordpress 
+    build: ./srcs/wordpress 
+    volumes:
+      - wordpress_volume:/var/www/html/wordpress 
+    env_file:
+      - .env 
+    networks:
+      - insception 
+    depends_on: 
+      - mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
+      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
+      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD} 
+      - WORDPRESS_TABLE_PREFIX=${WORDPRESS_TABLE_PREFIX}
+    ports:
+      - 9000:9000
+    restart: always
+    init : true 
+
+  nginx:
+    container_name: nginx
+    depends_on: 
+      - wordpress
+    build: ./srcs/nginx/
+    networks:
+      - insception 
+    ports:
+      - 443:443 
+    env_file:
+      - .env
+    volumes:
+      - wordpress_volume:/var/www/html/wordpress 
+    restart: always
+    init : true
+
+networks: 
   insception:
     driver: bridge

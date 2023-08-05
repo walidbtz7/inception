@@ -1,28 +1,32 @@
-FROM php:7.4-fpm-alpine
+FROM debian:buster
 
-RUN apk update && apk add --no-cache \
-    autoconf \
-    g++ \
-    libtool \
-    make \
-    curl \
-    libmcrypt-dev \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    libxml2-dev \
-    freetype-dev
+RUN apt-get update && apt-get install -y php7.3 \
+    php7.3-fpm \
+    php7.3-mysql \
+    mariadb-client \
+    nginx \
+    curl
 
-RUN docker-php-ext-install -j$(nproc) iconv mbstring mysqli pdo_mysql gd soap
+# Downloading WP-CLI
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+# Making the wp-cli.phar file executable and moving it to the /usr/local/bin/ path
+# and renaming it 'wp' to use that as the command and not 'wp-cli.phar'
+RUN chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
 
-# download wordpress
-RUN curl -o wordpress.tar.gz -fSL "https://wordpress.org/latest.tar.gz" \
-    && tar -xzf wordpress.tar.gz -C /usr/src/ \
-    && rm wordpress.tar.gz
+# You may need to copy the necessary files for WordPress setup.
+# Assuming you have a directory containing the WordPress files and wp_setup.sh,
+# you can uncomment and use the following line to copy them.
+COPY . /var/www/html/
 
-COPY --chown=www-data:www-data --from=wordpress /usr/src/wordpress /var/www/html
+COPY wp-config.php /var/www/html/wordpress/wp-config.php
 
-RUN chown -R www-data:www-data /var/www/html
+# Ensure the wp_setup.sh script is executable
+COPY wp_setup.sh /wp_setup.sh
+RUN chmod +x /wp_setup.sh
 
-EXPOSE 9000
-# start the PHP-FPM server
-CMD ["php-fpm"]
+# Create the directory for PHP-FPM socket
+RUN mkdir /run/php/
+
+ENTRYPOINT ["/wp_setup.sh"]
+
+CMD ["php-fpm7.3", "-F"]

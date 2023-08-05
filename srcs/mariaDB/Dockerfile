@@ -1,28 +1,18 @@
-# Use the Alpine image as the base
-FROM alpine:latest
+FROM debian:buster
 
-# Update and install the necessary dependencies
-RUN apk update && apk add \
-    mariadb \
-    mariadb-client \
-    openrc \
-    bash
+# Update package lists and install MariaDB server
+RUN apt-get update && apt-get install -y mariadb-server
 
-# Remove default databases
-RUN rm -rf /var/lib/mysql
+# Copy the setup script and MySQL configuration file
+COPY mariadb_setup.sh /mariadb_setup.sh
+COPY my.cnf /etc/mysql/mariadb.conf.d/
 
-# Copy over files
-COPY ./srcs/mariaDB /var/lib/mysql
-
-# Make the MariaDB service start automatically when the container starts
-RUN rc-update add mariadb default && \
-    echo -e "[mysqld]\nskip-host-cache\nskip-name-resolve" > /etc/my.cnf.d/mariadb-server.cnf && \
-    /etc/init.d/mariadb setup
-
-# Setup MariaDB
-COPY mariadb_setup.sh /
+# Give executable permissions to the setup script and entrypoint script
 RUN chmod +x /mariadb_setup.sh
-CMD [ "/mariadb_setup.sh" ]
 
-# Expose the MariaDB port
+# Set the custom entrypoint script as the entrypoint
+ENTRYPOINT ["/mariadb_setup.sh"]
+
 EXPOSE 3306
+# The CMD is set to start mysqld as the main process (can be overridden by running the container with a command)
+CMD ["mysqld"]
