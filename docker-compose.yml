@@ -13,6 +13,10 @@ volumes:
       o: bind
       device: ${PWD}/volumes/mariadb
 
+networks: 
+  insception:
+    driver: bridge
+
 services: 
   mariadb:
     container_name: mariadb
@@ -73,7 +77,3 @@ services:
       - wordpress_volume:/var/www/html/wordpress 
     restart: always
     init : true
-
-networks: 
-  insception:
-    driver: bridge

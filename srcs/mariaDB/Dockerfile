@@ -13,6 +13,5 @@ RUN chmod +x /mariadb_setup.sh
 # Set the custom entrypoint script as the entrypoint
 ENTRYPOINT ["/mariadb_setup.sh"]
 
-EXPOSE 3306
 # The CMD is set to start mysqld as the main process (can be overridden by running the container with a command)
-CMD ["mysqld"]
+CMD ["mysqld","--bind-address=0.0.0.0"]
