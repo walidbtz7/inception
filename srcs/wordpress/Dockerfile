@@ -1,8 +1,8 @@
-FROM debian:bookworm
+FROM debian:bullseye
 
-RUN apt-get update && apt-get install -y php8.2 \
-    php8.2-fpm \
-    php8.2-mysql \
+RUN apt-get update && apt-get install -y php7.4 \
+    php7.4-fpm \
+    php7.4-mysql \
     mariadb-client \
     nginx \
     curl
@@ -11,7 +11,7 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
 
 RUN chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
 
-COPY www.conf /etc/php/8.2/fpm/pool.d/www.conf
+COPY www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
 COPY . /var/www/html/
 
@@ -25,4 +25,4 @@ RUN mkdir -p /run/php
 
 ENTRYPOINT [ "./wp_setup.sh" ]
 
-CMD ["php-fpm8.2", "-F"]
+CMD ["php-fpm7.4", "-F"]
