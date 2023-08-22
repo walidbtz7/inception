@@ -4,7 +4,11 @@ ENV = .env
 
 All: $(NAME)
 
-$(NAME): ENV
+volumes: 
+	@[ -d "volumes/mariadb" ] || mkdir -p volumes/mariadb
+	@[ -d "volumes/wordpress" ] || mkdir -p volumes/wordpress
+
+$(NAME): ENV volumes
 	docker compose -f $(SRC) build --no-cache
 	docker compose -f $(SRC) up
 
