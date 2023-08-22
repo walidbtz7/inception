@@ -14,7 +14,7 @@ volumes:
       device: ./volumes/mariadb
 
 networks: 
-  mynetwork:
+  inception:
     driver: bridge
 
 services: 
@@ -32,7 +32,7 @@ services:
     env_file: 
       - .env 
     networks:
-      - mynetwork 
+      - inception 
     init : true
 
   wordpress:
@@ -43,7 +43,7 @@ services:
     env_file:
       - .env 
     networks:
-      - mynetwork 
+      - inception 
     depends_on: 
       - mariadb
     environment:
@@ -64,7 +64,7 @@ services:
       - wordpress
     build: ./srcs/nginx/
     networks:
-      - mynetwork 
+      - inception 
     ports:
       - 443:443 
     env_file:
