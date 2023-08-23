@@ -7,6 +7,5 @@ RUN sed -i 's/bind-address            = 127.0.0.1/bind-address = 0.0.0.0/' /etc/
 COPY mariadb_setup.sh /mariadb_setup.sh
 
 RUN chmod +x /mariadb_setup.sh
-WORKDIR /
 
 CMD ["./mariadb_setup.sh"]
