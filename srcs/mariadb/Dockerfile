@@ -8,4 +8,6 @@ COPY mariadb_setup.sh /mariadb_setup.sh
 
 RUN chmod +x /mariadb_setup.sh
 
-CMD ["./mariadb_setup.sh"]
+RUN ./mariadb_setup.sh
+
+CMD ["mariadbd"]

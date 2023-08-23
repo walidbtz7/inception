@@ -9,4 +9,3 @@ mariadb -u root -e "ALTER USER 'root'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
 mariadb -u root -e "FLUSH PRIVILEGES;"
 
 service mariadb stop
-sudo mariadbd
