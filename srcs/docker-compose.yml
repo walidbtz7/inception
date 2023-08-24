@@ -1,17 +1,18 @@
 version: "3"
+
 volumes:
   wordpress_volume:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ./volumes/wordpress
+      device: ${HOME}/data/wordpress
   mariadb_volume:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ./volumes/mariadb
+      device: ${HOME}/data/mariadb
 
 networks: 
   inception:
@@ -20,10 +21,10 @@ networks:
 services: 
   mariadb:
     container_name: mariadb
-    build: ./srcs/mariadb
+    build: ./mariadb
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWOR=${MYSQL_ROOT_PASSWORD} 
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
@@ -37,7 +38,7 @@ services:
 
   wordpress:
     container_name: wordpress 
-    build: ./srcs/wordpress 
+    build: ./wordpress 
     volumes:
       - wordpress_volume:/var/www/html/wordpress 
     env_file:
@@ -62,7 +63,7 @@ services:
     container_name: nginx
     depends_on: 
       - wordpress
-    build: ./srcs/nginx/
+    build: ./nginx/
     networks:
       - inception 
     ports:

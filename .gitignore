@@ -1,2 +1,2 @@
-.env
-volumes
+srcs/.env
+srcs/volumes
