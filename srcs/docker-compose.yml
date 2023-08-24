@@ -21,13 +21,14 @@ networks:
 services: 
   mariadb:
     container_name: mariadb
-    build: ./mariadb
-    restart: always
-    environment:
+    build: 
+      context: ./mariadb
+      args:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    restart: always
     volumes:
       - mariadb_volume:/var/lib/mysql/
     env_file: 
@@ -47,15 +48,6 @@ services:
       - inception 
     depends_on: 
       - mariadb
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
-      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
-      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD} 
-      - WORDPRESS_TABLE_PREFIX=${WORDPRESS_TABLE_PREFIX}
     restart: always
     init : true 
 

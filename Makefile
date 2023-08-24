@@ -1,4 +1,4 @@
-PROJECT_ROOT := $HOME
+PROJECT_ROOT := $(shell echo $(HOME))
 NAME = INCEPTION
 SRC = srcs/docker-compose.yml
 ENV = srcs/.env
