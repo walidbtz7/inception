@@ -6,13 +6,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${HOME}/data/wordpress
+      device: /home/wboutzou/data/wordpress
   mariadb_volume:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${HOME}/data/mariadb
+      device: /home/wboutzou/data/mariadb
 
 networks: 
   inception:
@@ -22,7 +22,7 @@ services:
   mariadb:
     container_name: mariadb
     build: 
-      context: ./mariadb
+      context: ./requirements/mariadb
       args:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
@@ -39,7 +39,7 @@ services:
 
   wordpress:
     container_name: wordpress 
-    build: ./wordpress 
+    build: ./requirements/wordpress 
     volumes:
       - wordpress_volume:/var/www/html/wordpress 
     env_file:
@@ -55,7 +55,7 @@ services:
     container_name: nginx
     depends_on: 
       - wordpress
-    build: ./nginx/
+    build: ./requirements/nginx/
     networks:
       - inception 
     ports:

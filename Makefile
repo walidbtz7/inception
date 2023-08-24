@@ -1,4 +1,3 @@
-PROJECT_ROOT := $(shell echo $(HOME))
 NAME = INCEPTION
 SRC = srcs/docker-compose.yml
 ENV = srcs/.env
@@ -8,15 +7,17 @@ ENV = srcs/.env
 All: $(NAME)
 
 volumes: 
-	@[ -d "${PROJECT_ROOT}/data/mariadb" ] || mkdir -p ${PROJECT_ROOT}/data/mariadb
-	@[ -d "${PROJECT_ROOT}/data/wordpress" ] || mkdir -p ${PROJECT_ROOT}/data/wordpress
+	@[ -d "/home/wboutzou/data/mariadb" ] || mkdir -p /home/wboutzou/data/mariadb
+	@[ -d "/home/wboutzou/data/wordpress" ] || mkdir -p /home/wboutzou/data/wordpress
 
 $(NAME): ENV volumes
-	docker-compose -f $(SRC) build
-	docker-compose -f $(SRC) up
+	docker-compose -f $(SRC) up --build -d
 
 ENV:
 	cp $(ENV).example $(ENV)
+
+build:
+	docker-compose -f $(SRC) build
 
 clean:
 	docker-compose -f $(SRC) down -v --rmi all
@@ -25,8 +26,8 @@ down:
 	docker-compose -f $(SRC) down
 
 fclean: clean
-	rm -rf ${PROJECT_ROOT}/data/mariadb/*
-	rm -rf ${PROJECT_ROOT}/data/wordpress/*
+	rm -rf /home/wboutzou/data/mariadb/*
+	rm -rf /home/wboutzou/data/wordpress/*
 	docker-compose -f $(SRC) rm
 
-re: fclean All
+re: ENV volumes fclean All
